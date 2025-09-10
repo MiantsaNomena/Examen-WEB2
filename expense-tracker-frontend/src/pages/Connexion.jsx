@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import './style/Connexion.css';
 
 const Connexion = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const Connexion = () => {
       await connexion(email, motDePasse);
     } catch (error) {
       setErreur(
-        error.response?.data?.message || 
+        error.response?.data?.message ||
         'Erreur de connexion. Vérifiez vos identifiants.'
       );
     } finally {
@@ -34,21 +35,12 @@ const Connexion = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '1rem'
-    }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <LogIn size={48} style={{ color: '#667eea', marginBottom: '1rem' }} />
+    <div className="connexion-container">
+      <div className="card">
+        <div className="card-header">
+          <LogIn size={48} className="icon-header" />
           <h1 className="card-title">Connexion</h1>
-          <p style={{ color: '#666', marginTop: '0.5rem' }}>
-            Connectez-vous à votre compte
-          </p>
+          <p className="card-subtitle">Connectez-vous à votre compte</p>
         </div>
 
         {erreur && (
@@ -61,7 +53,7 @@ const Connexion = () => {
         <form onSubmit={gererSoumission}>
           <div className="form-group">
             <label className="form-label">
-              <Mail size={16} style={{ marginRight: '0.5rem' }} />
+              <Mail size={16} className="label-icon" />
               Email
             </label>
             <input
@@ -76,7 +68,7 @@ const Connexion = () => {
 
           <div className="form-group">
             <label className="form-label">
-              <Lock size={16} style={{ marginRight: '0.5rem' }} />
+              <Lock size={16} className="label-icon" />
               Mot de passe
             </label>
             <input
@@ -92,24 +84,16 @@ const Connexion = () => {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', marginBottom: '1rem' }}
             disabled={chargement}
           >
             {chargement ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#666' }}>
+        <div className="link-container">
+          <p>
             Pas encore de compte ?{' '}
-            <Link 
-              to="/inscription" 
-              style={{ 
-                color: '#667eea', 
-                textDecoration: 'none',
-                fontWeight: '500'
-              }}
-            >
+            <Link to="/inscription" className="link-inscription">
               S'inscrire
             </Link>
           </p>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import './style/Inscription.css'; // <-- import du CSS
 
 const Inscription = () => {
   const [email, setEmail] = useState('');
@@ -24,7 +25,6 @@ const Inscription = () => {
     setErreur('');
     setSucces('');
 
-    // Validation des mots de passe
     if (motDePasse !== confirmationMotDePasse) {
       setErreur('Les mots de passe ne correspondent pas');
       setChargement(false);
@@ -40,13 +40,10 @@ const Inscription = () => {
     try {
       await inscription(email, motDePasse);
       setSucces('Compte créé avec succès ! Redirection...');
-      setTimeout(() => {
-        // La redirection se fera automatiquement via le contexte d'auth
-      }, 2000);
     } catch (error) {
       setErreur(
-        error.response?.data?.message || 
-        'Erreur lors de la création du compte. Veuillez réessayer.'
+        error.response?.data?.message ||
+          'Erreur lors de la création du compte. Veuillez réessayer.'
       );
     } finally {
       setChargement(false);
@@ -54,21 +51,12 @@ const Inscription = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '1rem'
-    }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <UserPlus size={48} style={{ color: '#667eea', marginBottom: '1rem' }} />
+    <div className="inscription-container">
+      <div className="card">
+        <div className="card-header">
+          <UserPlus size={48} className="icon-header" />
           <h1 className="card-title">Inscription</h1>
-          <p style={{ color: '#666', marginTop: '0.5rem' }}>
-            Créez votre compte pour commencer
-          </p>
+          <p className="card-subtitle">Créez votre compte pour commencer</p>
         </div>
 
         {erreur && (
@@ -88,7 +76,7 @@ const Inscription = () => {
         <form onSubmit={gererSoumission}>
           <div className="form-group">
             <label className="form-label">
-              <Mail size={16} style={{ marginRight: '0.5rem' }} />
+              <Mail size={16} className="label-icon" />
               Email
             </label>
             <input
@@ -103,7 +91,7 @@ const Inscription = () => {
 
           <div className="form-group">
             <label className="form-label">
-              <Lock size={16} style={{ marginRight: '0.5rem' }} />
+              <Lock size={16} className="label-icon" />
               Mot de passe
             </label>
             <input
@@ -119,7 +107,7 @@ const Inscription = () => {
 
           <div className="form-group">
             <label className="form-label">
-              <Lock size={16} style={{ marginRight: '0.5rem' }} />
+              <Lock size={16} className="label-icon" />
               Confirmer le mot de passe
             </label>
             <input
@@ -135,24 +123,16 @@ const Inscription = () => {
           <button
             type="submit"
             className="btn btn-primary"
-            style={{ width: '100%', marginBottom: '1rem' }}
             disabled={chargement}
           >
             {chargement ? 'Création du compte...' : 'Créer mon compte'}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#666' }}>
+        <div className="link-container">
+          <p>
             Déjà un compte ?{' '}
-            <Link 
-              to="/connexion" 
-              style={{ 
-                color: '#667eea', 
-                textDecoration: 'none',
-                fontWeight: '500'
-              }}
-            >
+            <Link to="/connexion" className="link-inscription">
               Se connecter
             </Link>
           </p>
