@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import '../pages/style/Connexion.css'; // 🔹 On importe le CSS
 
 const Connexion = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +11,7 @@ const Connexion = () => {
 
   const { connexion, estConnecte } = useAuth();
 
+  // Rediriger si déjà connecté
   if (estConnecte) {
     return <Navigate to="/tableau-de-bord" replace />;
   }
@@ -25,8 +25,8 @@ const Connexion = () => {
       await connexion(email, motDePasse);
     } catch (error) {
       setErreur(
-        error.response?.data?.message ||
-          'Erreur de connexion. Vérifiez vos identifiants.'
+        error.response?.data?.message || 
+        'Erreur de connexion. Vérifiez vos identifiants.'
       );
     } finally {
       setChargement(false);
@@ -34,29 +34,39 @@ const Connexion = () => {
   };
 
   return (
-    <div className="connexion-container">
-      <div className="connexion-card">
-        <div className="connexion-header">
-          <LogIn size={48} className="connexion-icon" />
-          <h1>Connexion</h1>
-          <p>Connectez-vous à votre compte</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '1rem'
+    }}>
+      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <LogIn size={48} style={{ color: '#667eea', marginBottom: '1rem' }} />
+          <h1 className="card-title">Connexion</h1>
+          <p style={{ color: '#666', marginTop: '0.5rem' }}>
+            Connectez-vous à votre compte
+          </p>
         </div>
 
         {erreur && (
-          <div className="alert-error">
+          <div className="alert alert-error">
             <AlertCircle size={20} />
-            <span>{erreur}</span>
+            {erreur}
           </div>
         )}
 
-        <form onSubmit={gererSoumission} className="connexion-form">
+        <form onSubmit={gererSoumission}>
           <div className="form-group">
-            <label>
-              <Mail size={16} className="label-icon" />
+            <label className="form-label">
+              <Mail size={16} style={{ marginRight: '0.5rem' }} />
               Email
             </label>
             <input
               type="email"
+              className="form-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@email.com"
@@ -65,12 +75,13 @@ const Connexion = () => {
           </div>
 
           <div className="form-group">
-            <label>
-              <Lock size={16} className="label-icon" />
+            <label className="form-label">
+              <Lock size={16} style={{ marginRight: '0.5rem' }} />
               Mot de passe
             </label>
             <input
               type="password"
+              className="form-input"
               value={motDePasse}
               onChange={(e) => setMotDePasse(e.target.value)}
               placeholder="Votre mot de passe"
@@ -78,15 +89,29 @@ const Connexion = () => {
             />
           </div>
 
-          <button type="submit" disabled={chargement}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginBottom: '1rem' }}
+            disabled={chargement}
+          >
             {chargement ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
-        <div className="inscription-link">
-          <p>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#666' }}>
             Pas encore de compte ?{' '}
-            <Link to="/inscription">S'inscrire</Link>
+            <Link 
+              to="/inscription" 
+              style={{ 
+                color: '#667eea', 
+                textDecoration: 'none',
+                fontWeight: '500'
+              }}
+            >
+              S'inscrire
+            </Link>
           </p>
         </div>
       </div>
