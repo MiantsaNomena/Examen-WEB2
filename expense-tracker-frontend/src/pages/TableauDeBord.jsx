@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
   AlertTriangle,
   Calendar,
   PieChart
 } from 'lucide-react';
 import { statistiqueService } from '../services/api';
+import './style/TableauDeBord.css';
 
 const TableauDeBord = () => {
   const [resumeMensuel, setResumeMensuel] = useState(null);
@@ -38,36 +39,30 @@ const TableauDeBord = () => {
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
   ];
 
-  const solde = resumeMensuel ? 
+  const solde = resumeMensuel ?
     (resumeMensuel.totalRevenus || 0) - (resumeMensuel.totalDepenses || 0) : 0;
 
   const budgetDepasse = solde < 0;
 
   if (chargement) {
     return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
+      <div className="loading">
         <p>Chargement du tableau de bord...</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem'
-      }}>
+    <div className="dashboard">
+      <div className="dashboard-header">
         <h1>Tableau de bord</h1>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+
+        <div className="filters">
           <Calendar size={20} />
           <select
             className="form-select"
             value={moisSelectionne}
             onChange={(e) => setMoisSelectionne(parseInt(e.target.value))}
-            style={{ width: 'auto' }}
           >
             {mois.map((nom, index) => (
               <option key={index} value={index + 1}>
@@ -75,12 +70,11 @@ const TableauDeBord = () => {
               </option>
             ))}
           </select>
-          
+
           <select
             className="form-select"
             value={anneeSelectionnee}
             onChange={(e) => setAnneeSelectionnee(parseInt(e.target.value))}
-            style={{ width: 'auto' }}
           >
             {[2023, 2024, 2025].map(annee => (
               <option key={annee} value={annee}>
@@ -104,72 +98,49 @@ const TableauDeBord = () => {
         </div>
       )}
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '2rem'
-      }}>
-        {/* Carte Revenus */}
+      <div className="cards-grid">
+        {/* Revenus */}
         <div className="card">
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center' 
-          }}>
+          <div className="card-content">
             <div>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                Revenus totaux
-              </p>
-              <h2 style={{ color: '#28a745', fontSize: '1.8rem', margin: 0 }}>
+              <p className="card-label">Revenus totaux</p>
+              <h2 className="card-value text-success">
                 {resumeMensuel?.totalRevenus?.toFixed(2) || '0.00'} €
               </h2>
             </div>
-            <TrendingUp size={32} style={{ color: '#28a745' }} />
+            <TrendingUp size={32} className="icon-success" />
           </div>
         </div>
 
-        {/* Carte Dépenses */}
+        {/* Dépenses */}
         <div className="card">
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center' 
-          }}>
+          <div className="card-content">
             <div>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                Dépenses totales
-              </p>
-              <h2 style={{ color: '#dc3545', fontSize: '1.8rem', margin: 0 }}>
+              <p className="card-label">Dépenses totales</p>
+              <h2 className="card-value text-danger">
                 {resumeMensuel?.totalDepenses?.toFixed(2) || '0.00'} €
               </h2>
             </div>
-            <TrendingDown size={32} style={{ color: '#dc3545' }} />
+            <TrendingDown size={32} className="icon-danger" />
           </div>
         </div>
 
-        {/* Carte Solde */}
+        {/* Solde */}
         <div className="card">
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center' 
-          }}>
+          <div className="card-content">
             <div>
-              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                Solde restant
-              </p>
-              <h2 style={{ 
-                color: solde >= 0 ? '#28a745' : '#dc3545', 
-                fontSize: '1.8rem', 
-                margin: 0 
-              }}>
+              <p className="card-label">Solde restant</p>
+              <h2
+                className="card-value"
+                style={{ color: solde >= 0 ? '#28a745' : '#dc3545' }}
+              >
                 {solde.toFixed(2)} €
               </h2>
             </div>
-            <DollarSign size={32} style={{ 
-              color: solde >= 0 ? '#28a745' : '#dc3545' 
-            }} />
+            <DollarSign
+              size={32}
+              style={{ color: solde >= 0 ? '#28a745' : '#dc3545' }}
+            />
           </div>
         </div>
       </div>
@@ -182,46 +153,37 @@ const TableauDeBord = () => {
             Répartition des dépenses par catégorie
           </h3>
         </div>
-        
+
         {resumeMensuel?.categoriesDepenses?.length > 0 ? (
           <div>
             {resumeMensuel.categoriesDepenses.map((categorie, index) => {
-              const pourcentage = resumeMensuel.totalDepenses > 0 
+              const pourcentage = resumeMensuel.totalDepenses > 0
                 ? (categorie.total / resumeMensuel.totalDepenses * 100).toFixed(1)
                 : 0;
-              
+
               return (
-                <div key={index} style={{ marginBottom: '1rem' }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    marginBottom: '0.5rem'
-                  }}>
+                <div key={index} className="category-item">
+                  <div className="category-header">
                     <span>{categorie.nom}</span>
-                    <span style={{ fontWeight: '500' }}>
+                    <span className="category-value">
                       {categorie.total.toFixed(2)} € ({pourcentage}%)
                     </span>
                   </div>
-                  <div style={{ 
-                    width: '100%', 
-                    height: '8px', 
-                    backgroundColor: '#e9ecef',
-                    borderRadius: '4px',
-                    overflow: 'hidden'
-                  }}>
-                    <div style={{
-                      width: `${pourcentage}%`,
-                      height: '100%',
-                      background: `hsl(${index * 50}, 70%, 50%)`,
-                      borderRadius: '4px'
-                    }} />
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{
+                        width: `${pourcentage}%`,
+                        background: `hsl(${index * 50}, 70%, 50%)`
+                      }}
+                    />
                   </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p style={{ color: '#666', textAlign: 'center', padding: '2rem' }}>
+          <p className="empty-text">
             Aucune dépense enregistrée pour ce mois
           </p>
         )}
@@ -232,12 +194,8 @@ const TableauDeBord = () => {
         <div className="card-header">
           <h3 className="card-title">Actions rapides</h3>
         </div>
-        
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem'
-        }}>
+
+        <div className="actions-grid">
           <a href="/depenses/nouvelle" className="btn btn-primary">
             Ajouter une dépense
           </a>

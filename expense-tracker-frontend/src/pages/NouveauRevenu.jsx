@@ -1,47 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { DollarSign, Calendar, FileText, Tag } from 'lucide-react';
+import React, { useState } from 'react'; // pour gerer le state
+import { useNavigate } from 'react-router-dom'; // navigation entre les pages 
+import { useAuth } from '../context/AuthContext'; // recuperer l utilisateur connecté 
+import { DollarSign, Calendar, FileText, Tag } from 'lucide-react'; // icones 
+import './style/NouveauRevenu.css';
+
 
 const NouveauRevenu = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // stocke un message d erreur 
 
   const [formData, setFormData] = useState({
-    amount: '',
+    amount: '', // montant
     date: new Date().toISOString().split('T')[0],
-    source: '',
-    description: ''
+    source: '', // source du revenu
+    description: '' // description optionelle 
   });
 
+  // fonction qui gere le changement d un input 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault(); // empeche le rechargement de la page
+    setLoading(true);// Avtive le spiner
+    setError(''); // reset des erreurs
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token'); // Recupere le token JWT
       const response = await fetch('http://localhost:3000/api/incomes', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`, // authentification
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData) // envoie les données du formulaire
       });
 
       if (response.ok) {
-        navigate('/revenus');
+        navigate('/revenus'); // Redirection si succes 
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Erreur lors de la création du revenu');
       }
     } catch (err) {
-      setError('Erreur de connexion au serveur');
+      setError('Erreur de connexion au serveur'); // Erreur reseau
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop spinnerz
     }
   };
 
@@ -54,24 +57,22 @@ const NouveauRevenu = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Nouveau Revenu</h1>
-          <p className="text-gray-600">Ajoutez un nouveau revenu à votre budget</p>
+    <div className="nr-container">
+      <div className="nr-wrapper">
+        <div className="nr-header">
+          <h1>Nouveau Revenu</h1>
+          <p>Ajoutez un nouveau revenu à votre budget</p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
+          <div className="nr-error">{error}</div>
         )}
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <DollarSign size={16} className="inline mr-1" />
+        <div className="nr-card">
+          <form onSubmit={handleSubmit} className="nr-form">
+            <div className="nr-group">
+              <label>
+                <DollarSign size={16} className="icon" />
                 Montant (€) *
               </label>
               <input
@@ -82,14 +83,13 @@ const NouveauRevenu = () => {
                 value={formData.amount}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="0.00"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Calendar size={16} className="inline mr-1" />
+            <div className="nr-group">
+              <label>
+                <Calendar size={16} className="icon" />
                 Date *
               </label>
               <input
@@ -98,20 +98,18 @@ const NouveauRevenu = () => {
                 value={formData.date}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Tag size={16} className="inline mr-1" />
+            <div className="nr-group">
+              <label>
+                <Tag size={16} className="icon" />
                 Source du revenu
               </label>
               <select
                 name="source"
                 value={formData.source}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 <option value="">Sélectionner une source</option>
                 <option value="Salaire">Salaire</option>
@@ -125,9 +123,9 @@ const NouveauRevenu = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <FileText size={16} className="inline mr-1" />
+            <div className="nr-group">
+              <label>
+                <FileText size={16} className="icon" />
                 Description
               </label>
               <textarea
@@ -135,20 +133,19 @@ const NouveauRevenu = () => {
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Description détaillée du revenu (optionnel)"
               />
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="nr-actions">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white py-2 px-4 rounded-md font-medium transition-colors flex items-center justify-center gap-2"
+                className="btn-primary"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="spinner"></div>
                     Ajout en cours...
                   </>
                 ) : (
@@ -161,7 +158,7 @@ const NouveauRevenu = () => {
               <button
                 type="button"
                 onClick={() => navigate('/revenus')}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="btn-secondary"
               >
                 Annuler
               </button>
@@ -169,12 +166,12 @@ const NouveauRevenu = () => {
           </form>
         </div>
 
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-medium text-blue-800 mb-2">💡 Conseils</h3>
-          <ul className="text-sm text-blue-700 space-y-1">
-            <li>• Enregistrez vos revenus régulièrement pour un suivi précis</li>
-            <li>• Utilisez des sources spécifiques pour mieux catégoriser vos revenus</li>
-            <li>• La description peut inclure des détails comme le projet ou le client</li>
+        <div className="nr-tips">
+          <h3>💡 Conseils</h3>
+          <ul>
+            <li>Enregistrez vos revenus régulièrement pour un suivi précis</li>
+            <li>Utilisez des sources spécifiques pour mieux catégoriser vos revenus</li>
+            <li>La description peut inclure des détails comme le projet ou le client</li>
           </ul>
         </div>
       </div>

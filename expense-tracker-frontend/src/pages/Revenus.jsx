@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, Calendar, DollarSign, Search, Filter } from 'lucide-react';
+import './style/revenus.css'; // <— ajoute ceci
 
 const Revenus = () => {
   const { user } = useAuth();

@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Search, 
-  Filter,
-  Calendar,
-  DollarSign,
-  FileText,
-  Download,
-  Eye
+import {
+  Plus, Edit, Trash2, Search, Filter,
+  Calendar, DollarSign, Download, Eye
 } from 'lucide-react';
 import { depenseService, categorieService, recuService } from '../services/api';
+import './style/Depenses.css';
+
 
 const Depenses = () => {
   const [depenses, setDepenses] = useState([]);
@@ -23,9 +17,7 @@ const Depenses = () => {
   const [categorieFiltre, setCategorieFiltre] = useState('');
   const [typeFiltre, setTypeFiltre] = useState('');
 
-  useEffect(() => {
-    chargerDonnees();
-  }, []);
+  useEffect(() => { chargerDonnees(); }, []);
 
   const chargerDonnees = async () => {
     try {
@@ -38,142 +30,88 @@ const Depenses = () => {
       setCategories(categoriesData.categories || []);
     } catch (error) {
       setErreur('Erreur lors du chargement des dépenses');
-      console.error(error);
     } finally {
       setChargement(false);
     }
   };
 
-  const voirRecu = async (expenseId, fileName) => {
+  const voirRecu = async (id, fileName) => {
     try {
-      const response = await recuService.obtenirRecu(expenseId);
+      const response = await recuService.obtenirRecu(id);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       window.open(url, '_blank');
       setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-    } catch (error) {
-      console.error('Erreur lors de l\'ouverture du reçu:', error);
+    } catch {
       setErreur('Aucun reçu trouvé pour cette dépense');
     }
   };
 
-  const telechargerRecu = async (expenseId, fileName) => {
+  const telechargerRecu = async (id, fileName) => {
     try {
-      await recuService.telechargerRecu(expenseId, fileName);
-    } catch (error) {
-      console.error('Erreur lors du téléchargement du reçu:', error);
+      await recuService.telechargerRecu(id, fileName);
+    } catch {
       setErreur('Erreur lors du téléchargement du reçu');
     }
   };
 
   const supprimerDepense = async (id) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')) {
-      return;
-    }
-
+    if (!window.confirm('Êtes-vous sûr ?')) return;
     try {
       await depenseService.supprimerDepense(id);
       setDepenses(depenses.filter(d => d.id !== id));
-    } catch (error) {
+    } catch {
       setErreur('Erreur lors de la suppression');
-      console.error(error);
     }
   };
 
-  const depensesFiltrees = depenses.filter(depense => {
-    const correspondRecherche = depense.description?.toLowerCase().includes(recherche.toLowerCase()) ||
-                               depense.amount?.toString().includes(recherche);
-    const correspondCategorie = !categorieFiltre || depense.categoryId?.toString() === categorieFiltre;
-    const correspondType = !typeFiltre || depense.type === typeFiltre;
-    
-    return correspondRecherche && correspondCategorie && correspondType;
+  const depensesFiltrees = depenses.filter(d => {
+    const matchSearch = d.description?.toLowerCase().includes(recherche.toLowerCase()) ||
+                        d.amount?.toString().includes(recherche);
+    const matchCat = !categorieFiltre || d.categoryId?.toString() === categorieFiltre;
+    const matchType = !typeFiltre || d.type === typeFiltre;
+    return matchSearch && matchCat && matchType;
   });
 
-  const obtenirNomCategorie = (categoryId) => {
-    const categorie = categories.find(c => c.id === categoryId);
-    return categorie ? categorie.name : 'Sans catégorie';
+  const obtenirNomCategorie = (id) => {
+    const c = categories.find(cat => cat.id === id);
+    return c ? c.name : 'Sans catégorie';
   };
 
-  if (chargement) {
-    return (
-      <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <p>Chargement des dépenses...</p>
-      </div>
-    );
-  }
+  if (chargement) return <div className="loading">Chargement des dépenses...</div>;
 
   return (
-    <div>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem'
-      }}>
+    <div className="depenses-container">
+      <div className="depenses-header">
         <h1>Mes Dépenses</h1>
         <Link to="/depenses/nouvelle" className="btn btn-primary">
-          <Plus size={20} />
-          Nouvelle dépense
+          <Plus size={20} /> Nouvelle dépense
         </Link>
       </div>
 
-      {erreur && (
-        <div className="alert alert-error">
-          {erreur}
-        </div>
-      )}
+      {erreur && <div className="alert alert-error">{erreur}</div>}
 
       {/* Filtres */}
-      <div className="card" style={{ marginBottom: '2rem' }}>
+      <div className="card">
         <div className="card-header">
-          <h3 className="card-title">
-            <Filter size={20} style={{ marginRight: '0.5rem' }} />
-            Filtres
-          </h3>
+          <h3><Filter size={20} /> Filtres</h3>
         </div>
-        
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem'
-        }}>
+        <div className="filters-grid">
           <div className="form-group">
-            <label className="form-label">
-              <Search size={16} style={{ marginRight: '0.5rem' }} />
-              Rechercher
-            </label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Description ou montant..."
-              value={recherche}
-              onChange={(e) => setRecherche(e.target.value)}
-            />
+            <label><Search size={16} /> Rechercher</label>
+            <input type="text" placeholder="Description ou montant..."
+                   value={recherche} onChange={e=>setRecherche(e.target.value)} />
           </div>
-
           <div className="form-group">
-            <label className="form-label">Catégorie</label>
-            <select
-              className="form-select"
-              value={categorieFiltre}
-              onChange={(e) => setCategorieFiltre(e.target.value)}
-            >
-              <option value="">Toutes les catégories</option>
-              {categories.map(categorie => (
-                <option key={categorie.id} value={categorie.id}>
-                  {categorie.name}
-                </option>
-              ))}
+            <label>Catégorie</label>
+            <select value={categorieFiltre} onChange={e=>setCategorieFiltre(e.target.value)}>
+              <option value="">Toutes</option>
+              {categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
-
           <div className="form-group">
-            <label className="form-label">Type</label>
-            <select
-              className="form-select"
-              value={typeFiltre}
-              onChange={(e) => setTypeFiltre(e.target.value)}
-            >
-              <option value="">Tous les types</option>
+            <label>Type</label>
+            <select value={typeFiltre} onChange={e=>setTypeFiltre(e.target.value)}>
+              <option value="">Tous</option>
               <option value="one-time">Ponctuelle</option>
               <option value="recurring">Récurrente</option>
             </select>
@@ -181,163 +119,50 @@ const Depenses = () => {
         </div>
       </div>
 
-      {/* Liste des dépenses */}
+      {/* Table */}
       <div className="card">
         {depensesFiltrees.length > 0 ? (
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Montant</th>
-                  <th>Catégorie</th>
-                  <th>Type</th>
-                  <th>Reçu</th>
-                  <th>Actions</th>
+                  <th>Date</th><th>Description</th><th>Montant</th>
+                  <th>Catégorie</th><th>Type</th><th>Reçu</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {depensesFiltrees.map(depense => (
-                  <tr key={depense.id}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Calendar size={16} />
-                        {new Date(depense.date).toLocaleDateString('fr-FR')}
-                      </div>
-                    </td>
-                    <td>{depense.description || 'Sans description'}</td>
-                    <td>
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '0.5rem',
-                        color: '#dc3545',
-                        fontWeight: '500'
-                      }}>
-                        <DollarSign size={16} />
-                        {depense.amount?.toFixed(2)} €
-                      </div>
-                    </td>
-                    <td>
-                      <span style={{
-                        padding: '0.25rem 0.5rem',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '0.85rem'
-                      }}>
-                        {obtenirNomCategorie(depense.categoryId)}
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{
-                        padding: '0.25rem 0.5rem',
-                        backgroundColor: depense.type === 'recurring' ? '#fff3cd' : '#d4edda',
-                        color: depense.type === 'recurring' ? '#856404' : '#155724',
-                        borderRadius: '4px',
-                        fontSize: '0.85rem'
-                      }}>
-                        {depense.type === 'recurring' ? 'Récurrente' : 'Ponctuelle'}
-                      </span>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.25rem' }}>
-                        <button
-                          onClick={() => voirRecu(depense.id, `recu-${depense.id}`)}
-                          className="btn btn-outline"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                          title="Voir le reçu"
-                        >
-                          <Eye size={14} />
-                        </button>
-                        <button
-                          onClick={() => telechargerRecu(depense.id, `recu-${depense.id}.pdf`)}
-                          className="btn btn-outline"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                          title="Télécharger le reçu"
-                        >
-                          <Download size={14} />
-                        </button>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <Link 
-                          to={`/depenses/${depense.id}/modifier`}
-                          className="btn btn-secondary"
-                          style={{ padding: '0.5rem' }}
-                        >
-                          <Edit size={16} />
-                        </Link>
-                        <button
-                          onClick={() => supprimerDepense(depense.id)}
-                          className="btn btn-danger"
-                          style={{ padding: '0.5rem' }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              {depensesFiltrees.map(d=>(
+                <tr key={d.id}>
+                  <td><Calendar size={16}/> {new Date(d.date).toLocaleDateString('fr-FR')}</td>
+                  <td>{d.description || 'Sans description'}</td>
+                  <td className="amount"><DollarSign size={16}/> {d.amount?.toFixed(2)} €</td>
+                  <td><span className="badge">{obtenirNomCategorie(d.categoryId)}</span></td>
+                  <td>
+                    <span className={`badge ${d.type==='recurring'?'recurring':'one-time'}`}>
+                      {d.type==='recurring'?'Récurrente':'Ponctuelle'}
+                    </span>
+                  </td>
+                  <td>
+                    <button onClick={()=>voirRecu(d.id)} className="btn btn-outline"><Eye size={14}/></button>
+                    <button onClick={()=>telechargerRecu(d.id)} className="btn btn-outline"><Download size={14}/></button>
+                  </td>
+                  <td>
+                    <Link to={`/depenses/${d.id}/modifier`} className="btn btn-secondary"><Edit size={16}/></Link>
+                    <button onClick={()=>supprimerDepense(d.id)} className="btn btn-danger"><Trash2 size={16}/></button>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </table>
           </div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <DollarSign size={48} style={{ color: '#ccc', marginBottom: '1rem' }} />
-            <h3 style={{ color: '#666', marginBottom: '1rem' }}>
-              Aucune dépense trouvée
-            </h3>
-            <p style={{ color: '#999', marginBottom: '2rem' }}>
-              {depenses.length === 0 
-                ? 'Commencez par ajouter votre première dépense'
-                : 'Aucune dépense ne correspond à vos critères de recherche'
-              }
-            </p>
-            <Link to="/depenses/nouvelle" className="btn btn-primary">
-              <Plus size={20} />
-              Ajouter une dépense
-            </Link>
+        ):(
+          <div className="empty-state">
+            <DollarSign size={48}/>
+            <h3>Aucune dépense trouvée</h3>
+            <Link to="/depenses/nouvelle" className="btn btn-primary"><Plus size={20}/> Ajouter une dépense</Link>
           </div>
         )}
       </div>
-
-      {/* Résumé */}
-      {depensesFiltrees.length > 0 && (
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Résumé</h3>
-          </div>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem'
-          }}>
-            <div>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>Total des dépenses</p>
-              <p style={{ fontSize: '1.5rem', fontWeight: '600', color: '#dc3545' }}>
-                {depensesFiltrees.reduce((total, d) => total + (d.amount || 0), 0).toFixed(2)} €
-              </p>
-            </div>
-            <div>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>Nombre de dépenses</p>
-              <p style={{ fontSize: '1.5rem', fontWeight: '600' }}>
-                {depensesFiltrees.length}
-              </p>
-            </div>
-            <div>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>Dépense moyenne</p>
-              <p style={{ fontSize: '1.5rem', fontWeight: '600' }}>
-                {depensesFiltrees.length > 0 
-                  ? (depensesFiltrees.reduce((total, d) => total + (d.amount || 0), 0) / depensesFiltrees.length).toFixed(2)
-                  : '0.00'
-                } €
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

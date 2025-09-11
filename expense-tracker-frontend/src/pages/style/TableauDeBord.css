@@ -1,0 +1,177 @@
+.dashboard {
+  padding: 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.form-select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Alerts */
+.alert {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  padding: 1rem;
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.text-success {
+  color: #28a745;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.icon-success {
+  color: #28a745;
+}
+
+.icon-danger {
+  color: #dc3545;
+}
+
+/* Categories */
+.category-item {
+  margin-bottom: 1rem;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.category-value {
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* Empty text */
+.empty-text {
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Actions */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem;
+  text-align: center;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+}
+
+.btn-success {
+  background: #28a745;
+  color: #fff;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #333;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
+}
