@@ -1,0 +1,141 @@
+/* Conteneur principal */
+.inscription-container {
+  min-height: 100vh;
+  min-width: 100vw; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Header */
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.icon-header {
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.card-subtitle {
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Formulaire */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Bouton */
+.btn {
+  display: inline-block;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background-color: #667eea;
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #5566c9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alertes */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #ffe0e0;
+  color: #b00020;
+}
+
+.alert-success {
+  background-color: #e0ffef;
+  color: #007a3d;
+}
+
+/* Lien inscription */
+.link-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.link-inscription {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link-inscription:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .card {
+    padding: 1rem;
+  }
+  .card-title {
+    font-size: 1.5rem;
+  }
+  .btn {
+    font-size: 0.95rem;
+  }
+}
